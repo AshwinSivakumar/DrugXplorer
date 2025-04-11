@@ -12,6 +12,24 @@ pip install -r requirements.txt
 Following cloning this repository, head to the `base_code.py` file in the Web application folder. We adopt the backend LLM framework from [Mistral AI](https://mistral.ai/). The instructions to generate your own API key is available in this [link](https://docs.mistral.ai/getting-started/quickstart/). Locate to the following code snippet in this file and paste the API key in the required lines. 
 
 ```python
-asasfwsdxc
+os.environ["MISTRAL_API_KEY"] = "" #Insert API key here. 
 ```
+
+You shall have the option to select your choice of LLM which can be customized in the following code snippet: 
+
+```python
+llm = LLM(
+    model="mistral-small-latest", #customize to your preference. 
+    api_base="https://api.mistral.ai/v1",
+    api_key=os.getenv("MISTRAL_API_KEY"),
+    temperature=0.2
+)
+```
+Base can be changed to the LLM of your choice inclusing OpenAI, Llama, etc. 
+
+Following these changes, `Base_Code.py` can be run 
+```bash
+python run Base_Code.py
+```
+
 
