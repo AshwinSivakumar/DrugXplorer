@@ -1,4 +1,4 @@
-# DrugXplorer Web Application
+# DrugXplorer: An AI– Assisted Open-Source Framework for Drug Analysis and Screening
 
 ## Installation required packages
 The package requirements are available in the `requirements.txt` file in the repo. 
