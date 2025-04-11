@@ -12,10 +12,26 @@ from rdkit import Chem
 from rdkit.Chem import AllChem,Draw
 from rdkit import DataStructs
 from rdkit.Chem import rdFingerprintGenerator
-from transformers import RobertaTokenizer, TFRobertaForSequenceClassification
+from crewai import Agent, Task, Crew, LLM
+from crewai_tools import SerperDevTool
+import os
+
+# Suppress warnings
+warnings.filterwarnings("ignore")
+
+os.environ["MISTRAL_API_KEY"] = ""
+
+llm = LLM(
+    model="mistral-small-latest",
+    api_base="https://api.mistral.ai/v1",
+    api_key=os.getenv("MISTRAL_API_KEY"),
+    temperature=0.2
+)
+#tool = SerperDevTool()
+#from transformers import RobertaTokenizer, TFRobertaForSequenceClassification
 from sklearn.model_selection import train_test_split
 warnings.filterwarnings('ignore')
-from transformers import TFRobertaForSequenceClassification, RobertaTokenizer
+#from transformers import TFRobertaForSequenceClassification, RobertaTokenizer
 import streamlit as st
 from rdkit.Chem import Descriptors, Crippen, rdMolDescriptors, Lipinski, Draw, QED
 import matplotlib.pyplot as plt
@@ -353,6 +369,7 @@ if tab =="🔬 ADME Analysis":
                 st.warning("⚠️ This molecule is an inhibitor of CYP3A4.")
             else:
                 st.success("✅ This molecule is not an inhibitor of CYP3A4.")
+            
 
             
 
@@ -474,8 +491,30 @@ if tab=="⚛️ Binding Affinity":
             eqb=eqb+L
             st.write("Binding affinity of your drug molecule with selected protein is")
             st.write(del_g)
-            st.write("Amount of drug in micromolar needed to modulate selected protien is")
+            st.write("Amount of drug in micromolar needed to modulate selected protein is")
             st.write(eqb)
+            with st.spinner("Processing... Please wait."):
+                inferencer = Agent(
+                    role="Drug Discovery Scientist",
+                    goal="From a given output of a prediction or experiment, provide valuable insights and inferences and find supporting studies relating to the experiment",
+                    backstory = "You give inferences and context from a given molecular property prediction",
+                    verbose = True,
+                    llm = llm,
+                    #tool = [tool]
+                )
+                give_insight = Task(
+                    description="""Write a concise paragraph to infer the following result: A Molecule with SMILES: {smiles_ip_2} when docked with a protein {protein} is predicted to generate a binding affinity of {del_g} and an IC50 value of {eqb}""",
+                    expected_output="A well-written, fact-based paragraph from credible resources",
+                    agent=inferencer,
+                )
+                crew = Crew(
+                    agents=[inferencer],
+                    tasks=[give_insight],
+                    verbose=False
+                )
+                result = crew.kickoff(inputs={"smiles_ip_2":smiles_ip_2 , "protein": protein,"del_g": del_g, "eqb":eqb})
+                st.subheader("Inference")
+                st.markdown(give_insight.output)
 
 if tab=="🧪 Drug Synergy":
     st.subheader("Drug Synergy Prediction")
@@ -543,6 +582,32 @@ if tab=="🧪 Drug Synergy":
             bliss_score=str(synergy_value)
             st.write("Bliss score of the two molecules with desired cell line is")
             st.write(bliss_score)
+            with st.spinner("Processing... Please wait."):
+                inferencer = Agent(
+                    role="Drug Discovery Scientist",
+                    goal="From a given output of a prediction or experiment, provide valuable insights and inferences and find supporting studies relating to the experiment",
+                    backstory = "You give inferences and context from a given molecular property prediction",
+                    verbose = True,
+                    llm = llm,
+                    #tool = [tool]
+                )
+                give_insight = Task(
+                    description="""Write a concise paragraph to infer the following result: 
+                                The Bliss Drug Synergy score for two drugs of SMILES {d1} and {d2} 
+                                on a cell line {cl} is predicted to be {value}
+                                A bliss score less than 0 is considered antagonistic, near 0 is considered additive
+                                and a score higher than 0 is considered synergistic.""",
+                    expected_output="A well-written, fact-based paragraph from credible resources",
+                    agent=inferencer,
+                )
+                crew = Crew(
+                    agents=[inferencer],
+                    tasks=[give_insight],
+                    verbose=False
+                )
+                result = crew.kickoff(inputs={"d1":smiles_sy_1 , "d2": smiles_sy_2,"cl": cell, "value":bliss_score})
+                st.subheader("Inference")
+                st.markdown(give_insight.output)
 
 
 
