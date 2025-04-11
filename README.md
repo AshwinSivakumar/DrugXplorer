@@ -32,4 +32,9 @@ Following these changes, `Base_Code.py` can be run
 python Base_Code.py
 ```
 
+## Cite this Work
+Coming Soon
 
+## Authors: 
+Ashwin Sivakumar, Rishi Senthil Kumar, Jagadeshwar Muthukumaran, Dr. Reena Monica P, Dr. Sheena Chrisabel Pravin 
+This work was carried out at MEDxAI Innovations and the Vellore Institute of Technology, Chennai.
