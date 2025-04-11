@@ -1,0 +1,10 @@
+python
+pandas
+numpy
+pubchempy
+pytorch
+rdkit
+cirpy
+streamlit
+crewai
+
