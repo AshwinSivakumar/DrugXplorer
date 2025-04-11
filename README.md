@@ -29,7 +29,7 @@ Base can be changed to the LLM of your choice inclusing OpenAI, Llama, etc.
 
 Following these changes, `Base_Code.py` can be run 
 ```bash
-python run Base_Code.py
+python Base_Code.py
 ```
 
 
